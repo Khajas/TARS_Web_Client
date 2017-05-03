@@ -19,13 +19,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 /**
- *
+ * The is an abstract class for supporting local services(services that doesn't
+ * require a server or services that should be implemented locally).
  * @author Anwar
  */
 public abstract class LocalApi {
     private static final ArrayList<Intents> INTENTS=new ArrayList<>();
     public static Set<String> intent_words=new HashSet<String>();
-
+    private final static double FIDELITY=0.4;   // Change this to adjust the matching score
+    /**
+     * Adds an intent to static intent_words array
+     * @param command
+     * @param category
+     * @param response
+     * @return boolean
+     */
     public boolean addIntent(String command, String category, String response){
         for(Intents i: INTENTS){
             if(i.getCommand().equals(command))
@@ -38,14 +46,27 @@ public abstract class LocalApi {
         }
         return true;
     }
-    public abstract String serve(String append);
-
+    /**
+     * Abstract method that should be implemented by all the inheriting classes
+     * @param appendResponse
+     * @return response
+     */
+    public abstract String serve(String appendResponse);
+    /**
+     * Prints all the commands from all the local APIS
+     */
     public static void print_commands() {
         System.out.println("Total intents: "+INTENTS.size());
         for(Intents i: INTENTS)
                 System.out.println(i.getCommand());
     }
-
+    /**
+     * Searches all the intents to match the user query
+     * and returns that most matching intent, based on a cut off score 
+     * called fidelity.
+     * @param command
+     * @return Intent
+     */
     public static Intents searchIntent(String command){
         Map<Intents, Double> intentScore=new HashMap<>();
         double highscore=-10000;
@@ -53,14 +74,15 @@ public abstract class LocalApi {
         for(Intents i: INTENTS){
                 double score=StringSimilarity.similarity(i.getCommand().toLowerCase(),
                                 command.toLowerCase());
-  //              System.out.println("Intent: "+i.getCommand()+" score: "+score);
+//              System.out.println("Intent: "+i.getCommand()+" score: "+score);
                 if(score>highscore) highscore=score;
                 intentScore.put(i, score);
         }
         for(Entry<Intents,Double> e: intentScore.entrySet()){
-                if(e.getValue()==highscore)
+                if((e.getValue()==highscore) && (highscore>=FIDELITY) )
                         return e.getKey();
         }
         return null;
     }
 }
+/////////////////////// END OF SOURCE FILE  /////////////////

@@ -17,78 +17,24 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- *
+ * To request service from TARS server
  * @author Anwar
  */
 public class ProcessServerRequest extends LocalApi{
     private boolean debugMode;
-    private String query;
-    public ProcessServerRequest(){
-        // Local Weather information
-        super.addIntent("What's today's forecast ", "weatherinfo", "It's seems to be ");
-        super.addIntent("What's today's weather ", "weatherinfo", "It's seems to be ");
-        super.addIntent("Today's forecast ", "weatherinfo", "It's seems to be ");
-        super.addIntent("Weather info ", "weatherinfo", "It's seems to be ");
-        super.addIntent("weather ", "weatherinfo", "It's ");
-        // Remote Weather information
-        super.addIntent("What's today's forecast in ", "weatherinforemote", "It's ");
-        super.addIntent("What's today's weather in ", "weatherinforemote", "It's ");
-        super.addIntent("What's today's forecast of ", "weatherinforemote", "It's ");
-        super.addIntent("What's today's weather of ", "weatherinforemote", "It's ");
-        super.addIntent("How is weather in ", "weatherinforemote", "It's ");
-        super.addIntent("weather in ", "weatherinforemote", "It's ");
-        super.addIntent("weather of ", "weatherinforemote", "It's ");
-        super.addIntent("forecast of ", "weatherinforemote", "It's ");
-        // Wiki Api
-        super.addIntent("What's ", "wikiapi", "");
-        super.addIntent("What's a ", "wikiapi", "");
-        super.addIntent("What is ", "wikiapi", "");
-        super.addIntent("What is a ", "wikiapi", "");
-        super.addIntent("Who is ", "wikiapi", "");
-        // Location Service
-        super.addIntent("what's my location", "locationservice","You're location in ");
-        super.addIntent("my location", "locationservice","It seems you're in ");
-        super.addIntent("where am I now", "locationservice","I guess you're at ");
-        super.addIntent("where am I located", "locationservice","I guess you're at ");
-        // Local news
-        super.addIntent("what's local news ", "localnews", "Local Headlines: ");
-        super.addIntent("what's today's news ", "localnews", "Local Headlines: ");
-        super.addIntent("what's local headlines ", "localnews", "Local Headlines: ");
-        super.addIntent("what's today's headlines ", "localnews", "Local Headlines: ");
-        super.addIntent("headlines ", "localnews", "Local Headlines: ");
-        super.addIntent("news ", "localnews", "Local Headlines: ");
-        // Indian News
-        super.addIntent("what's indian news", "indiannews", "Indian Headlines: ");
-        super.addIntent("what's news of india", "indiannews", "Indian Headlines: ");
-        super.addIntent("what's today's news of india", "indiannews", "Indian Headlines: ");
-        super.addIntent("what's headlines at indian ", "indiannews", "Indian Headlines: ");
-        super.addIntent("what's today's indian headlines ", "indiannews", "Indian Headlines: ");
-        super.addIntent("headlines of india", "indiannews", "Indian Headlines: ");
-        super.addIntent("indian headlines", "indiannews", "Indian Headlines: ");
-        super.addIntent("news of india", "indiannews", "Indian Headlines: ");
-        // Technical news
-        super.addIntent("what's technical news ", "technicalnews", "Technical Headlines: ");
-        super.addIntent("what's today's technical news ", "technicalnews", "Technical Headlines: ");
-        super.addIntent("what's technical headlines ", "technicalnews", "Technical Headlines: ");
-        super.addIntent("what's today's technical headlines ", "technicalnews", "Technical Headlines: ");
-        super.addIntent("headlines technical ", "technicalnews", "Technical Headlines: ");
-        super.addIntent("news technical ", "technicalnews", "Technical Headlines: ");
-        // Sports news
-        super.addIntent("what's sports news ", "sportsnews", "Sports Headlines: ");
-        super.addIntent("what's today's sports news ", "sportsnews", "Sports Headlines: ");
-        super.addIntent("what's sports headlines ", "sportsnews", "Sports Headlines: ");
-        super.addIntent("what's today's sports headlines ", "sportsnews", "Sports Headlines: ");
-        super.addIntent("headlines sports ", "sportsnews", "Sports Headlines: ");
-        super.addIntent("news sports ", "sportsnews", "Sports Headlines: ");
-        
-    }
+    private final String query;
     public ProcessServerRequest(String query){
-        this();
         this.query=query.replaceAll(" ","+");
     }
+    /**
+     * Process a user request and returns server response
+     * @return server_response
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
     public String processQuery() throws MalformedURLException, IOException{
-        String message="";
-        String httpQuery="http://localhost:8080/TARS_Web_service/webapi/query/"+query;
+        String server_response="";
+        String httpQuery="http://localhost:8080/TARS/webapi/query/"+query;
         if(debugMode) System.out.println("Http query: "+httpQuery);
         URL url;
         try{
@@ -100,21 +46,30 @@ public class ProcessServerRequest extends LocalApi{
         String responseCode=connection.getResponseMessage();
         if(debugMode) System.out.println("Respose code: "+responseCode);
         if(responseCode.equals("OK")){
-            message=this.readResponse(connection);
+            server_response=this.readResponse(connection);
         }
         connection.disconnect();
-        return message;
+        return server_response;
     }        
-     
+    /**
+     * Reads response from the given HttpURLConnection
+     * @param connection
+     * @return server_response
+     * @throws IOException 
+     */
     private String readResponse(HttpURLConnection connection ) throws IOException{
-        String message="";
+        String server_response="";
         InputStream response=(InputStream)connection.getContent();
         int numBytes=response.available();
         for(int i=0;i<numBytes;++i)
-           message+=((char)response.read());
-        return message;
+           server_response+=((char)response.read());
+        return server_response;
     }
-     
+    /**
+     * Makes connection to server for the given URL
+     * @param url
+     * @return HttpURLConnection
+     */
     private HttpURLConnection connectServer(URL url){
          HttpURLConnection connection;
          try{
@@ -127,7 +82,11 @@ public class ProcessServerRequest extends LocalApi{
          }
          return connection;
      }
-
+    /**
+     * Serves the purpose(or desired action) of API
+     * @param append
+     * @return response
+     */
     @Override
     public String serve(String append) {
         try {
@@ -137,3 +96,4 @@ public class ProcessServerRequest extends LocalApi{
         }
     }
 }
+//////////////////////  END OF SOURCE FILE  ////////////////////////////////////

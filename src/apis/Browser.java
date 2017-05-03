@@ -10,14 +10,13 @@
  */
 package apis;
 
-import apis.LocalApi;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- *
+ * The following class is to open the default browser on a user system.
  * @author Anwar
  */
 public class Browser extends LocalApi{
@@ -29,10 +28,18 @@ public class Browser extends LocalApi{
         super.addIntent("browser", "browserservice", "Opening browser");
         super.addIntent("open mozilla firefox", "browserservice", "Opening browser");
     }
+    /**
+     * Constructor for browser class
+     * @param url 
+     */
     public Browser(String url){
         this();
         this.url=url;
     }
+    /**
+     * Opens browser
+     * @return 
+     */
     public String openBrowser(){
         String responseMessage="okay, ";
         if(Desktop.isDesktopSupported()){
@@ -52,9 +59,14 @@ public class Browser extends LocalApi{
         }
         return responseMessage;
     }
-
+    /**
+     * Serves the purpose(or desired action) of API
+     * @param append
+     * @return response
+     */
     @Override
     public String serve(String append) {
         return this.openBrowser()+append;
     }
 }
+/////////////////////// END OF SOURCE FILE  /////////////////
